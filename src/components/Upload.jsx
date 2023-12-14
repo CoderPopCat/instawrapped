@@ -89,8 +89,8 @@ function Upload() {
                     </div>
                 </div>)}
                 {result && (
-                    <div className="stats">
-                        <div className="block-1 lg:flex lg:justify-between gap-[2.5rem]">
+                    <div className="stats mt-3">
+                        <div className="flex flex-col lg:flex-row lg:justify-between gap-[1rem] lg:gap-[2.5rem] lg:mx-0">
                             <div className="stats-box lg:w-[33%] lg:mt-4 mt-2 px-4 py-2 bg-[#ffffff0d] animate__delay-1s rounded-lg relative group flex justify-start">
                                 <div className="names m-3 text-left">
                                     <h2 className="text-3xl">{result.personalInfo.name}</h2>
@@ -105,7 +105,7 @@ function Upload() {
                                     })}</div>
                                 </div>
                             </div>
-                            <div className="stats-box lg:w-[66%] lg:mt-4 mt-2 px-4 py-2 bg-[#ffffff0d] animate__delay-1s rounded-lg relative group flex justify-start">
+                            <div className="stats-box lg:w-[66%] lg:mx-0 lg:mt-4 mt-2 px-4 py-2 bg-[#ffffff0d] animate__delay-1s rounded-lg relative group flex justify-start">
                                 <div className="stats-content m-3 text-left">
                                     <h2 className='text-3xl'>
                                         Favorite Words

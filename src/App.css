@@ -235,7 +235,7 @@ h2 {
   font-family: MatterTRIAL;
   font-weight: 700;
   line-height: 1.2;
-  font-size: 78px;
+  font-size: 67px;
   z-index: -1;
 }
 
@@ -803,8 +803,18 @@ section img {
 }
 
 @media only screen and (max-width:900px) {
+  body {
+    min-height: 100vh;
+  }
   .content h1 {
-    font-size: 64px
+    font-size: 50px
+  }
+
+  .fav-words {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
   }
 
   .content {
