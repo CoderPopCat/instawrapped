@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Unzip, AsyncUnzipInflate } from "fflate";
-import { getSaved, recentSearches, getComments, getStories, messages, getDMS, storiesPosted, following, followers, firstFollower, blocked } from '../functions';
+import { getSaved, recentSearches, getComments, getStories, messages, getDMS, storiesPosted, following, followers, firstFollower, blocked, personalInfo } from '../functions';
 
 function Upload() {
     const [result, setResult] = useState('');
@@ -35,7 +35,8 @@ function Upload() {
                     };
                 }
                 const filenames = files.map(f => f.name);
-                if (!filenames.includes(`${files[0].name.split("/")[0]}/messages/`)) return alert('This file is not an Instagram data package!');
+                console.log(files)
+                if (!filenames.includes(`messages/`)) return alert('This file is not an Instagram data package!');
                 async function extract(files, options) {
                     const data = {};
                     const allMessages = await messages(files);
@@ -54,6 +55,7 @@ function Upload() {
                     data.followers = await followers(files);
                     data.firstFollower = await firstFollower(files);
                     data.blocked = await blocked(files);
+                    data.personalInfo = await personalInfo(files);
                     setResult(JSON.stringify(data))
                 }
                 extract(files)

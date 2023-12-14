@@ -22,7 +22,7 @@ export const readFile = async (name, files) => {
 }
 
 const read = async (file, files) => {
-    return JSON.parse(await readFile(`${files[0].name.split("/")[0]}/${file}`, files))
+    return JSON.parse(await readFile(`${file}`, files))
 }
 
 export const getSaved = async (files) => {
@@ -43,14 +43,13 @@ export const getComments = async (files) => {
 }
 
 export const getStories = async (files) => {
-    const normalLength = `${files[0].name.split("/")[0]}/media/stories/123456/`.length;
-    const stories = files.filter((file) => file.name.startsWith(`${files[0].name.split("/")[0]}/media/stories`) && file.name.length > normalLength);
-    return stories.length;
+    const stories = await read("content/stories.json", files);
+    return stories.ig_stories.length;
 }
 
 export const getDMS = (files) => {
-    const dms = (files.filter((file) => file.name.startsWith(`${files[0].name.split("/")[0]}/messages/inbox`) && file.name.endsWith(".json")).map(f => f.name));
-    const unique = [...new Set(dms.map(item => item.split("/")[3]))];
+    const dms = (files.filter((file) => file.name.startsWith(`messages/inbox`) && file.name.endsWith(".json")).map(f => f.name));
+    const unique = [...new Set(dms.map((dm) => dm.split("/")[2]))];
     return unique;
 }
 
@@ -64,9 +63,10 @@ export const messages = async (files) => {
             if (extra) messages.messages.push(...extra.messages);
         }
         if (messages.title) {
-            allDMS.push({ username: decodeURIComponent(escape(messages.title.toString())), name: decodeURIComponent(escape(dm.toString())), count: messages.messages.length, myMessages: messages.messages.filter((message) => message.sender_name === files[0].name.split("/")[0].slice(0, -9)).length, participants: messages.participants.length })
+            allDMS.push({ username: decodeURIComponent(escape(messages.title.toString())), name: decodeURIComponent(escape(dm.toString())), count: messages.messages.length, myMessages: messages.messages.filter((message) => message.sender_name === messages.participants[1].name).length, participants: messages.participants.length })
         }
     };
+    console.log(allDMS);
     return allDMS;
 }
 
@@ -104,4 +104,15 @@ export const firstFollower = async (files) => {
 export const blocked = async (files) => {
     const blocked = await read("followers_and_following/blocked_accounts.json", files);
     return blocked.relationships_blocked_users.length;
+}
+
+export const personalInfo = async (files) => {
+    const personalInfo = await read("personal_information/personal_information.json", files);
+    const data = {
+        username: decodeURIComponent(escape(personalInfo.profile_user[0].string_map_data.Username.value)),
+        name: decodeURIComponent(escape(personalInfo.profile_user[0].string_map_data.Name.value)),
+        bio: decodeURIComponent(escape(personalInfo.profile_user[0].string_map_data.Bio.value)),
+        lastPFPUpdate: personalInfo.profile_user[0].media_map_data["Profile Photo"].creation_timestamp,
+    }
+    return data;
 }
