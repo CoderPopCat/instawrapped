@@ -53,9 +53,42 @@ export const getDMS = (files) => {
     return unique;
 }
 
+
+function findMostRepeatedWord(words) {
+    const ignoreWordsLength4Or5 = ['sent', 'from', 'attachment', 'the', 'and', 'that', 'with', 'this', 'have', 'your', 'from', 'will', 'been', 'they', 'were', 'which', 'would', 'about'];
+
+    function isEnglishWord(word) {
+        return /^[a-zA-Z]+$/.test(word);
+    }
+
+    function shouldIgnore(word) {
+        const lowerCaseWord = word.toLowerCase();
+        return ignoreWordsLength4Or5.includes(lowerCaseWord) || ignoreWordsLength4Or5.includes(lowerCaseWord.substring(0, 5));
+    }
+
+    const wordFrequencyMap = new Map();
+
+    words.forEach((word) => {
+        const lowercaseWord = word.toLowerCase();
+        if (!shouldIgnore(lowercaseWord) && isEnglishWord(lowercaseWord)) {
+            const count = wordFrequencyMap.get(lowercaseWord) || 0;
+            wordFrequencyMap.set(lowercaseWord, count + 1);
+        }
+    });
+
+    const wordFrequencyArray = Array.from(wordFrequencyMap.entries());
+    wordFrequencyArray.sort((a, b) => b[1] - a[1]);
+
+    const top10Words = wordFrequencyArray.slice(0, 10);
+    const top10WordsOnly = top10Words.map((pair) => ({ word: pair[0], count: pair[1] }));
+
+    return top10WordsOnly;
+}
+
 export const messages = async (files) => {
     const dms = getDMS(files);
     const allDMS = [];
+    const debug = [];
     for (const dm of dms) {
         const messages = await read(`messages/inbox/${dm}/message_1.json`, files);
         for (let i = 2; i <= 4; i++) {
@@ -63,11 +96,24 @@ export const messages = async (files) => {
             if (extra) messages.messages.push(...extra.messages);
         }
         if (messages.title) {
-            allDMS.push({ username: decodeURIComponent(escape(messages.title.toString())), name: decodeURIComponent(escape(dm.toString())), count: messages.messages.length, myMessages: messages.messages.filter((message) => message.sender_name === messages.participants[1].name).length, participants: messages.participants.length })
+            allDMS.push({ username: decodeURIComponent(escape(messages.title.toString())), name: decodeURIComponent(escape(dm.toString())), count: messages.messages.length, myMessages: messages.messages.filter((message) => message.sender_name === messages.participants[1].name).length, participants: messages.participants.length });
+            debug.push({ username: decodeURIComponent(escape(messages.title.toString())), name: decodeURIComponent(escape(dm.toString())), count: messages.messages, myMessages: messages.messages.filter((message) => message.sender_name === messages.participants[1].name).length, participants: messages.participants.length })
         }
     };
-    console.log(allDMS);
-    return allDMS;
+    console.log(debug);
+    const allWords = [];
+    for (const conv of debug) {
+        for (const message of conv.count) {
+            if (message.content) {
+                const words = message.content.split(" ");
+                for (const word of words) {
+                    allWords.push(word);
+                }
+            }
+        }
+    }
+    const words = allWords.filter((word) => word.length > 3);
+    return {allDMS, favWords: findMostRepeatedWord(words)};
 }
 
 export const storiesPosted = async (files) => {
