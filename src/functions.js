@@ -152,6 +152,26 @@ export const blocked = async (files) => {
     return blocked.relationships_blocked_users.length;
 }
 
+export const closeFriends = async (files) => {
+    const closeFriends = await read("followers_and_following/close_friends.json", files);
+    return closeFriends.relationships_close_friends.length;
+}
+
+export const storiesLiked = async (files) => {
+    const storiesLiked = await read("story_sticker_interactions/story_likes.json", files);
+    return storiesLiked.story_activities_story_likes.length;
+}
+
+export const likedPosts = async (files) => {
+    const likedPosts = await read("likes/liked_posts.json", files);
+    return likedPosts.likes_media_likes.length;
+}
+
+export const likedComments = async (files) => {
+    const likedComments = await read("likes/liked_comments.json", files);
+    return likedComments.likes_comment_likes.length;
+}
+
 export const personalInfo = async (files) => {
     const personalInfo = await read("personal_information/personal_information.json", files);
     const data = {
