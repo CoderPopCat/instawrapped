@@ -36,7 +36,7 @@
 }
 
 body {
-  background-image: url(https://srv2.imgonline.com.ua/result_img/imgonline-com-ua-ReplaceColor-go8QBSLYG7.png);
+  background-image: url(./assets/bg.png);
   background-size: cover;
   background-repeat: no-repeat;
   background-color: #121212;
@@ -810,7 +810,7 @@ section img {
     font-size: 50px
   }
 
-  .fav-words {
+  .stats-subcontainer {
     display: flex;
     justify-content: center;
     align-items: center;
