@@ -172,6 +172,16 @@ export const likedComments = async (files) => {
     return likedComments.likes_comment_likes.length;
 }
 
+export const devices = async (files) => {
+    const devices = await read("device_information/devices.json", files);
+    return devices.devices_devices.length;
+}
+
+export const firstStory = async (files) => {
+    const personalInfo = await read("personal_information/account_information.json", files);
+    return personalInfo.profile_account_insights[0].string_map_data["First Story Time"].timestamp;
+}
+
 export const personalInfo = async (files) => {
     const personalInfo = await read("personal_information/personal_information.json", files);
     const data = {

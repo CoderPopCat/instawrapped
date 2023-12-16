@@ -1,8 +1,14 @@
 import React, { useState } from 'react';
 import { Unzip, AsyncUnzipInflate } from "fflate";
-import { getSaved, recentSearches, getComments, getStories, messages, getDMS, storiesPosted, following, followers, firstFollower, blocked, personalInfo, closeFriends, storiesLiked, likedPosts, likedComments } from '../functions';
+import { getSaved, recentSearches, getComments, getStories, messages, getDMS, storiesPosted, following, followers, firstFollower, blocked, personalInfo, closeFriends, storiesLiked, likedPosts, likedComments, devices, firstStory } from '../functions';
 import { Tooltip } from 'react-tooltip';
 import LoadingBar from 'react-top-loading-bar'
+import Leaderboard from './Leaderboard';
+import FollowInfo from './FollowInfo';
+import Posted from './Posted';
+import Liked from './Liked';
+import Relations from './Relations';
+import Misc from './Misc';
 
 function Upload() {
     const [result, setResult] = useState('');
@@ -28,7 +34,6 @@ function Upload() {
                 reader.onfile = f => files.push(f);
                 if (!uploaded.stream) return alert('This browser isn\'t supported, please try a different one!')
                 const fileReader = uploaded.stream().getReader();
-                setProgress(progress + 20)
                 while (true) {
                     const { done, value } = await fileReader.read();
                     if (done) {
@@ -40,7 +45,6 @@ function Upload() {
                     };
                 }
                 const filenames = files.map(f => f.name);
-                setProgress(progress + 20)
                 if (!filenames.includes(`messages/`)) return alert('This file is not an Instagram data package!');
                 async function extract(files, options) {
                     const data = {};
@@ -51,7 +55,6 @@ function Upload() {
                     const searches = await recentSearches(files);
                     if (searches !== 0) data.recentSearches = searches;
                     data.totalComments = await getComments(files);
-                    data.stories = await getStories(files);
                     data.totalDMS = getDMS(files).length;
                     data.topDMS = leaderboard;
                     data.messagesSent = allMessages.reduce((a, b) => a + b.myMessages, 0);
@@ -68,6 +71,8 @@ function Upload() {
                     data.storiesLiked = await storiesLiked(files);
                     data.likedPosts = await likedPosts(files);
                     data.likedComments = await likedComments(files);
+                    data.devices = await devices(files);
+                    data.firstStory = await firstStory(files);
                     setResult(data)
                 }
                 extract(files)
@@ -171,150 +176,28 @@ function Upload() {
                             </div>
                         </div>
                         <div className="flex flex-col lg:flex-row lg:justify-between gap-[1rem] mt-[1.5rem] lg:gap-[1.7rem] lg:mx-0">
-                            <div className="stats-box lg:w-[33%] lg:mx-0 lg:mt-4 mt-6 px-4 py-2 bg-[#ffffff0d] animate__delay-1s rounded-lg relative group flex justify-start h-max">
-                                <div className="stats-content w-[93%] m-3 text-left">
-                                    <h2 className='text-[1.65rem]'>
-                                        Top DMs
-                                    </h2>
-                                    <div className="mt-3 leaderboard flex flex-col gap-[0.7rem]">
-                                        {result.topDMS.map((user, i) => {
-                                            return (
-                                                <div className='leaderboard-item duration-75 cursor-pointer hover:bg-[#ffffff0d] hover:px-4 rounded-lg flex justify-between w-full items-center'>
-                                                    <div className={`mr-3 user-position p-4 ${i + 1 === 1 ? 'bg-[#da9e3b]' : i + 1 === 2 ? 'bg-[#989898]' : i + 1 === 3 ? 'bg-[#ae7458]' : 'bg-[#ffffff0d]'} flex justify-center items-center text-white rounded-full h-10 w-10`}>{i + 1}</div>
-                                                    <div className="user-name text-2xl flex w-full justify-between items-center flex-row">
-                                                        <span className="font-semibold">{user.username}</span>
-                                                        <div className="flex flex-col justify-start text-right">
-                                                            <span className="text-[19px] flex items-center flex-row justify-between gap-1 text-right text-white">{user.count.toLocaleString()} Total <svg xmlns="http://www.w3.org/2000/svg" height="24" className="fill-gray-300 hover:fill-white ml-2" width="24"><path d="M6 14h8v-2H6Zm0-3h12V9H6Zm0-3h12V6H6ZM2 22V4q0-.825.588-1.413Q3.175 2 4 2h16q.825 0 1.413.587Q22 3.175 22 4v12q0 .825-.587 1.413Q20.825 18 20 18H6Z"></path></svg></span>
-                                                            <span className="text-[19px] flex items-center flex-row justify-between gap-1 text-right text-white">{user.myMessages.toLocaleString()} By Me <svg xmlns="http://www.w3.org/2000/svg" height="24" className="fill-gray-300 hover:fill-white ml-2" width="24"><path d="M6 14h8v-2H6Zm0-3h12V9H6Zm0-3h12V6H6ZM2 22V4q0-.825.588-1.413Q3.175 2 4 2h16q.825 0 1.413.587Q22 3.175 22 4v12q0 .825-.587 1.413Q20.825 18 20 18H6Z"></path></svg></span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )
-                                        })}
-                                    </div>
+                            <Leaderboard result={result} />
+                            <div className="flex flex-col gap-[0.3rem] mb-10 w-[100%] lg:w-[66%]">
+                                <Liked result={result} />
+                                <Relations result={result} />
+                                <Posted result={result} />
+                                <FollowInfo result={result} />
+                                <Misc result={result} />
+                                <div className="buttons flex flex-col items-center justify-center lg:justify-normal lg:items-start lg:flex-row flex-wrap gap-5 mt-7 pt-4 border-t-[2px] border-gray-500 border-dashed">
+                                    <Tooltip id='download' />
+                                    <a data-tooltip-id='donate' data-tooltip-content='Download this information as .json' data-tooltip-float={false} data-tooltip-variant='dark' class="hero-button" type="button"
+                                        href={`data:text/json;charset=utf-8,${encodeURIComponent(
+                                            JSON.stringify(result)
+                                        )}`}
+                                        download={`${result.personalInfo.username}.json`}
+                                    >
+                                        <span class="btn-text"><i className="far mr-2 fa-arrow-up-right-from-square"></i>Export .JSON</span>
+                                    </a>
+                                    <Tooltip id='donate' />
+                                    <a href="https://ko-fi.com/popcatdev" target="_blank" data-tooltip-id='donate' data-tooltip-content='Consider donating if you liked this project ;)' data-tooltip-float={false} data-tooltip-variant='dark' class="hero-button donate">
+                                        <span class="btn-text"><i className="far mr-2 fa-dollar"></i>Donate</span>
+                                    </a>
                                 </div>
-                            </div>
-                            <div className="flex flex-col gap-[0.3rem] w-[100%] lg:w-[66%]">
-                                <div className="flex flex-col lg:flex-row lg:justify-between gap-[1rem] lg:gap-[1.7rem] lg:mx-0">
-                                    <div className="stats-box mt-8 lg:w-[35%] lg:mx-0 h-max lg:mt-4 px-4 py-2 bg-[#ffffff0d] animate__delay-1s rounded-lg relative group flex lg:justify-start justify-center">
-                                        <div className="stats-content m-3 lg:text-left text-center">
-                                            <h2 className='text-[1.475rem]'>
-                                                Liked Posts
-                                            </h2>
-                                            <div className="stats-subcontainer mt-1">
-                                                <h3 className="text-2xl text-gray-300 font-thin">{result.likedPosts.toLocaleString()}</h3>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="stats-box lg:w-[35%] lg:mx-0 h-max lg:mt-4 mt-2 px-4 py-2 bg-[#ffffff0d] animate__delay-1s rounded-lg relative group flex lg:justify-start justify-center">
-                                        <div className="stats-content m-3 lg:text-left text-center">
-                                            <h2 className='text-[1.475rem]'>
-                                                Liked Comments
-                                            </h2>
-                                            <div className="stats-subcontainer mt-1">
-                                                <h3 className="text-2xl text-gray-300 font-thin">{result.likedComments.toLocaleString()}</h3>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="stats-box lg:w-[35%] lg:mx-0 h-max lg:mt-4 mt-2 px-4 py-2 bg-[#ffffff0d] animate__delay-1s rounded-lg relative group flex lg:justify-start justify-center">
-                                        <div className="stats-content m-3 lg:text-left text-center">
-                                            <h2 className='text-[1.475rem]'>
-                                                Liked Stories
-                                            </h2>
-                                            <div className="stats-subcontainer mt-1">
-                                                <h3 className="text-2xl text-gray-300 font-thin">{result.storiesLiked.toLocaleString()}</h3>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="flex flex-col lg:flex-row lg:justify-between gap-[1rem] lg:gap-[1.7rem] lg:mx-0">
-                                    <div className="stats-box mt-8 lg:w-[33%] lg:mx-0 h-max lg:mt-4 px-4 py-2 bg-[#ffffff0d] animate__delay-1s rounded-lg relative group flex lg:justify-start justify-center">
-                                        <div className="stats-content m-3 lg:text-left text-center">
-                                            <h2 className='text-[1.65rem]'>
-                                                Blocked Users
-                                            </h2>
-                                            <div className="stats-subcontainer mt-3">
-                                                <h3 className="text-2xl text-gray-300 font-thin">{result.blocked.toLocaleString()}</h3>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="stats-box mt-8 lg:w-[33%] lg:mx-0 h-max lg:mt-4 px-4 py-2 bg-[#ffffff0d] animate__delay-1s rounded-lg relative group flex lg:justify-start justify-center">
-                                        <div className="stats-content m-3 lg:text-left text-center">
-                                            <h2 className='text-[1.65rem]'>
-                                                Saved Posts
-                                            </h2>
-                                            <div className="stats-subcontainer mt-3">
-                                                <h3 className="text-2xl text-gray-300 font-thin">{result.saved.toLocaleString()}</h3>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="stats-box lg:w-[33%] lg:mx-0 h-max lg:mt-4 mt-2 px-4 py-2 bg-[#ffffff0d] animate__delay-1s rounded-lg relative group flex lg:justify-start justify-center">
-                                        <div className="stats-content m-3 lg:text-left text-center">
-                                            <h2 className='text-[1.475rem]'>
-                                                Close Friends
-                                            </h2>
-                                            <div className="stats-subcontainer mt-3">
-                                                <h3 className="text-2xl text-gray-300 font-thin">{result.closeFriends.toLocaleString()}</h3>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="flex flex-col lg:flex-row lg:justify-between gap-[1rem] lg:gap-[1.7rem] lg:mx-0">
-
-                                    <div className="stats-box lg:w-[50%] lg:mx-0 h-max lg:mt-4 mt-2 px-4 py-2 bg-[#ffffff0d] animate__delay-1s rounded-lg relative group flex lg:justify-start justify-center">
-                                        <div className="stats-content m-3 lg:text-left text-center">
-                                            <h2 className='text-[1.475rem]'>
-                                                Total Stories Posted
-                                            </h2>
-                                            <div className="stats-subcontainer mt-3">
-                                                <h3 className="text-2xl text-gray-300 font-thin">{result.stories.toLocaleString()}</h3>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="stats-box lg:w-[50%] lg:mx-0 h-max lg:mt-4 mt-2 px-4 py-2 bg-[#ffffff0d] animate__delay-1s rounded-lg relative group flex lg:justify-start justify-center">
-                                        <div className="stats-content m-3 lg:text-left text-center">
-                                            <h2 className='text-[1.65rem]'>
-                                                Comments Posted
-                                            </h2>
-                                            <div className="stats-subcontainer mt-3">
-                                                <h3 className="text-2xl text-gray-300 font-thin">{result.totalComments.toLocaleString()}</h3>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="flex flex-col lg:flex-row lg:justify-between gap-[1rem] lg:gap-[1.7rem] lg:mx-0">
-                                    <div className="stats-box mt-8 lg:w-[auto] lg:mx-0 h-max lg:mt-4 px-4 py-2 bg-[#ffffff0d] animate__delay-1s rounded-lg relative group flex lg:justify-start justify-center">
-                                        <div className="stats-content m-3 lg:text-left text-center">
-                                            <h2 className='text-[1.475rem]'>
-                                                First Follower
-                                            </h2>
-                                            <div className="stats-subcontainer mt-1">
-                                                <h3 className="text-2xl text-gray-300 font-thin">{result.firstFollower}</h3>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="stats-box lg:w-[35%] lg:mx-0 h-max lg:mt-4 mt-2 px-4 py-2 bg-[#ffffff0d] animate__delay-1s rounded-lg relative group flex lg:justify-start justify-center">
-                                        <div className="stats-content m-3 lg:text-left text-center">
-                                            <h2 className='text-[1.475rem]'>
-                                                Followers
-                                            </h2>
-                                            <div className="stats-subcontainer mt-1">
-                                                <h3 className="text-2xl text-gray-300 font-thin">{result.followers.toLocaleString()}</h3>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="stats-box lg:w-[35%] lg:mx-0 h-max lg:mt-4 mt-2 px-4 py-2 bg-[#ffffff0d] animate__delay-1s rounded-lg relative group flex lg:justify-start justify-center">
-                                        <div className="stats-content m-3 lg:text-left text-center">
-                                            <h2 className='text-[1.475rem]'>
-                                                Following
-                                            </h2>
-                                            <div className="stats-subcontainer mt-1">
-                                                <h3 className="text-2xl text-gray-300 font-thin">{result.following.toLocaleString()}</h3>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
                             </div>
                         </div>
 
@@ -325,4 +208,4 @@ function Upload() {
     )
 }
 
-export default Upload
+export default Upload;
