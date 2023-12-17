@@ -30,12 +30,6 @@ export const getSaved = async (files) => {
     return savedPosts.saved_saved_media.length;
 }
 
-export const recentSearches = async (files) => {
-    const recentSearches = await read("recent_searches/account_searches.json", files);
-    if (!recentSearches.searches_user.length) return 0;
-    return recentSearches.searches_user.map((search) => search.string_map_data.Search.value);
-}
-
 export const getComments = async (files) => {
     const postComments = await read("comments/post_comments_1.json", files);
     const reelComments = await read("comments/reels_comments.json", files);

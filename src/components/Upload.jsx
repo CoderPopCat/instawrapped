@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Unzip, AsyncUnzipInflate } from "fflate";
-import { getSaved, recentSearches, getComments, getStories, messages, getDMS, storiesPosted, following, followers, firstFollower, blocked, personalInfo, closeFriends, storiesLiked, likedPosts, likedComments, devices, firstStory } from '../functions';
+import { getSaved, getComments, getStories, messages, getDMS, storiesPosted, following, followers, firstFollower, blocked, personalInfo, closeFriends, storiesLiked, likedPosts, likedComments, devices, firstStory } from '../functions';
 import { Tooltip } from 'react-tooltip';
 import LoadingBar from 'react-top-loading-bar'
 import Leaderboard from './Leaderboard';
@@ -52,8 +52,6 @@ function Upload() {
                     const { allDMS: allMessages, favWords } = await messages(files);
                     const leaderboard = allMessages.filter(u => u.participants < 3).sort((a, b) => b.count - a.count).slice(0, 10);
                     data.saved = await getSaved(files);
-                    const searches = await recentSearches(files);
-                    if (searches !== 0) data.recentSearches = searches;
                     data.totalComments = await getComments(files);
                     data.totalDMS = getDMS(files).length;
                     data.topDMS = leaderboard;
@@ -65,7 +63,6 @@ function Upload() {
                     data.firstFollower = await firstFollower(files);
                     data.blocked = await blocked(files);
                     data.personalInfo = await personalInfo(files);
-                    console.log(data)
                     data.favoriteWords = favWords;
                     data.closeFriends = await closeFriends(files);
                     data.storiesLiked = await storiesLiked(files);
@@ -83,6 +80,10 @@ function Upload() {
         } else {
             alert('wrong file type!')
         }
+    }
+    const blur = (classname) => {
+        const el = document.querySelector(`.${classname}`);
+        el.style.filter.includes('blur') ? el.style.filter = 'unset' : el.style.filter = 'blur(6px)';
     }
     return (
         <>
@@ -128,10 +129,10 @@ function Upload() {
                                 </div>
                                 <div className="stats-box lg:w-[66%] lg:mx-0 lg:mt-4 mt-2 px-4 py-2 bg-[#ffffff0d] animate__delay-1s rounded-lg relative group flex justify-start">
                                     <div className="stats-content m-3 text-left">
-                                        <h2 className='text-[1.65rem]'>
+                                        <h2 className='text-[1.65rem] cursor-pointer' onClick={() => blur('favwords')}>
                                             Favorite Words
                                         </h2>
-                                        <div className="stats-subcontainer mt-3">
+                                        <div className="stats-subcontainer mt-3 favwords">
                                             {result.favoriteWords.map((word, i) => {
                                                 return (
                                                     <>
@@ -147,30 +148,30 @@ function Upload() {
                             <div className="flex flex-col lg:flex-row lg:justify-between gap-[1rem] lg:gap-[1.7rem] lg:mx-0">
                                 <div className="stats-box mt-8 lg:w-[33%] lg:mx-0 lg:mt-4 px-4 py-2 bg-[#ffffff0d] animate__delay-1s rounded-lg relative group flex lg:justify-start justify-center">
                                     <div className="stats-content m-3 lg:text-left text-center">
-                                        <h2 className='text-[1.65rem]'>
+                                        <h2 className='text-[1.65rem] cursor-pointer' onClick={() => blur('conv')}>
                                             Total Conversations
                                         </h2>
-                                        <div className="stats-subcontainer mt-3">
+                                        <div className="stats-subcontainer mt-3 conv">
                                             <h3 className="text-2xl text-gray-300 font-thin">{result.totalDMS.toLocaleString()}</h3>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="stats-box lg:w-[33%] lg:mx-0 lg:mt-4 mt-2 px-4 py-2 bg-[#ffffff0d] animate__delay-1s rounded-lg relative group flex lg:justify-start justify-center">
                                     <div className="stats-content m-3 lg:text-left text-center">
-                                        <h2 className='text-[1.65rem]'>
+                                        <h2 className='text-[1.65rem] cursor-pointer' onClick={() => blur('messagesSent')}>
                                             Messages Sent
                                         </h2>
-                                        <div className="stats-subcontainer mt-3">
+                                        <div className="stats-subcontainer mt-3 messagesSent">
                                             <h3 className="text-2xl text-gray-300 font-thin">{result.messagesSent.toLocaleString()}</h3>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="stats-box lg:w-[33%] lg:mx-0 lg:mt-4 mt-2 px-4 py-2 bg-[#ffffff0d] animate__delay-1s rounded-lg relative group flex lg:justify-start justify-center">
                                     <div className="stats-content m-3 lg:text-left text-center">
-                                        <h2 className='text-[1.65rem]'>
+                                        <h2 className='text-[1.65rem] cursor-pointer' onClick={() => blur('received')}>
                                             Messages Received
                                         </h2>
-                                        <div className="stats-subcontainer mt-3">
+                                        <div className="stats-subcontainer mt-3 received">
                                             <h3 className="text-2xl text-gray-300 font-thin">{result.messagesReceived.toLocaleString()}</h3>
                                         </div>
                                     </div>
@@ -186,7 +187,7 @@ function Upload() {
                                     <Misc result={result} />
                                     <div className="buttons flex flex-col items-center justify-center lg:justify-normal lg:items-start lg:flex-row flex-wrap gap-5 mt-7 pt-4 border-t-[2px] border-gray-500 border-dashed">
                                         <Tooltip id='download' />
-                                        <a data-tooltip-id='donate' data-tooltip-content='Download this information as .json' data-tooltip-float={false} data-tooltip-variant='dark' class="hero-button" type="button"
+                                        <a data-tooltip-id='donate' data-tooltip-content="Download this information as .json [DO NOT SHARE WITH PEOPLE YOU DON'T TRUST]" data-tooltip-float={false} data-tooltip-variant='dark' class="hero-button" type="button"
                                             href={`data:text/json;charset=utf-8,${encodeURIComponent(
                                                 JSON.stringify(result)
                                             )}`}

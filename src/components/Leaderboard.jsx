@@ -1,13 +1,17 @@
 import React from 'react'
 
 function Leaderboard({ result }) {
+    const blur = (classname) => {
+        const el = document.querySelector(`.${classname}`);
+        el.style.filter.includes('blur') ? el.style.filter = 'unset' : el.style.filter = 'blur(15px)';
+    }
     return (
         <div className="stats-box lg:w-[33%] lg:mx-0 lg:mt-4 mt-6 px-4 py-2 bg-[#ffffff0d] animate__delay-1s rounded-lg relative group flex justify-start h-max">
             <div className="stats-content w-[93%] m-3 text-left">
-                <h2 className='text-[1.65rem]'>
+                <h2 className='text-[1.65rem] cursor-pointer' onClick={() => blur('topdms')}>
                     Top DMs
                 </h2>
-                <div className="mt-3 leaderboard flex flex-col gap-[0.7rem]">
+                <div className="mt-3 leaderboard flex flex-col gap-[0.7rem] topdms">
                     {result.topDMS.map((user, i) => {
                         return (
                             <div className='leaderboard-item duration-75 cursor-pointer hover:bg-[#ffffff0d] hover:px-4 rounded-lg flex justify-between w-full items-center'>
