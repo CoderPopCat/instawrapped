@@ -15,8 +15,8 @@ function Leaderboard({ result }) {
                                 <div className="user-name text-2xl flex w-full justify-between items-center flex-row">
                                     <span className="font-semibold">{user.username}</span>
                                     <div className="flex flex-col justify-start text-right">
-                                        <span className="text-[19px] flex items-center flex-row justify-between gap-1 text-right text-white">{user.count.toLocaleString()} Total <svg xmlns="http://www.w3.org/2000/svg" height="24" className="fill-gray-300 hover:fill-white ml-2" width="24"><path d="M6 14h8v-2H6Zm0-3h12V9H6Zm0-3h12V6H6ZM2 22V4q0-.825.588-1.413Q3.175 2 4 2h16q.825 0 1.413.587Q22 3.175 22 4v12q0 .825-.587 1.413Q20.825 18 20 18H6Z"></path></svg></span>
-                                        <span className="text-[19px] flex items-center flex-row justify-between gap-1 text-right text-white">{user.myMessages.toLocaleString()} By Me <svg xmlns="http://www.w3.org/2000/svg" height="24" className="fill-gray-300 hover:fill-white ml-2" width="24"><path d="M6 14h8v-2H6Zm0-3h12V9H6Zm0-3h12V6H6ZM2 22V4q0-.825.588-1.413Q3.175 2 4 2h16q.825 0 1.413.587Q22 3.175 22 4v12q0 .825-.587 1.413Q20.825 18 20 18H6Z"></path></svg></span>
+                                        <span className="text-[19px] flex items-center flex-row justify-between gap-1 text-right text-white">{user.count.toLocaleString()} Total <i className='ml-2 fas fa-message-lines'></i></span>
+                                        <span className="text-[19px] flex items-center flex-row justify-between gap-1 text-right text-white">{user.myMessages.toLocaleString()} By Me <i className='ml-2 fas fa-message-lines'></i></span>
                                     </div>
                                 </div>
                             </div>
