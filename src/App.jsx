@@ -10,6 +10,7 @@ import {
 } from "react-router-dom";
 import Upload from './components/Upload'
 import Demo from './components/Demo';
+import Guide from './components/Guide';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
       <Switch>
         <Route path='/' exact children={<Upload />} />
         <Route path='/demo' exact children={<Demo />} />
+        <Route path='/guide' exact children={<Guide />} />
       </Switch>
     </Router>
     </>

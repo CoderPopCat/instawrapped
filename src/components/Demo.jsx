@@ -26,7 +26,7 @@ function Demo() {
         "saved": 312,
         "totalComments": 2334,
         "totalDMS": 242,
-        "topDMS": topDMS,
+        "topDMS": topDMS.sort((a, b) => b.count - a.count),
         "messagesSent": 65462,
         "messagesReceived": 35435,
         "storiesPosted": 232,
