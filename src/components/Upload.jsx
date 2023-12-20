@@ -115,7 +115,7 @@ function Upload() {
                             <Tooltip id='guide' />
                             <Tooltip id='demo' />
                             <Tooltip id='donate' />
-                            <div className="home-buttons mt-[2vh] flex justify-center items-center gap-[1rem]">
+                            <div className="home-buttons mt-[2vh] flex flex-wrap justify-center items-center gap-[1rem]">
                                 <button onClick={() => setOpen(true)} data-tooltip-id='about' data-tooltip-content='About this web app and the privacy notice.' data-tooltip-float={false} data-tooltip-variant='dark' className="pill-button bg-[#ffffff0d] p-[0.7rem] px-5 hover:bg-[#1b1f23] border-[2px] border-[#1b1f23] rounded-[3rem]"><span className="btn-text text-gray-300"><i className="text-gray-300 text-lg fas mr-2 fa-circle-info"></i>About</span></button>
                                 <a data-tooltip-id='guide' data-tooltip-content='View a guide on how to download your .zip package' data-tooltip-float={false} data-tooltip-variant='dark' href='/guide' target="_blank" className="pill-button bg-[#ffffff0d] p-[0.7rem] px-5 hover:bg-[#1b1f23] border-[2px] border-[#1b1f23] rounded-[3rem]"><span className="btn-text text-gray-300"><i className="text-gray-300 text-lg fas mr-2 fa-circle-question"></i>Guide</span></a>
                                 <a data-tooltip-id='demo' data-tooltip-content='Try out the UI with dummy data.' data-tooltip-float={false} data-tooltip-variant='dark' href="/demo" target="_blank" className="pill-button bg-[#ffffff0d] p-[0.7rem] px-5 hover:bg-[#1b1f23] border-[2px] border-[#1b1f23] rounded-[3rem]"><span className="btn-text text-gray-300"><i className="text-gray-300 text-lg far mr-2 fa-window"></i>Demo</span></a>

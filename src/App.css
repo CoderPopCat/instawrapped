@@ -236,7 +236,6 @@ h2 {
   font-weight: 700;
   line-height: 1.2;
   font-size: 67px;
-  z-index: -1;
 }
 
 .head {
@@ -392,6 +391,20 @@ h2 {
   white-space: nowrap;
   cursor: pointer;
   transition: all .3s;
+}
+
+.line {
+  display: flex;
+  align-items: center;
+}
+
+.line::before {
+  display: unset;
+  margin-right: 10px;
+  content: "";
+  width: 40px;
+  height: 2px;
+  background: #06f;
 }
 
 .donate span,
