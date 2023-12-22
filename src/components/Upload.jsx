@@ -47,7 +47,6 @@ function Upload() {
                     };
                 }
                 const filenames = files.map(f => f.name);
-                if (!filenames.includes(`messages/`)) return alert('This file is not an Instagram data package!');
                 async function extract(files, options) {
                     const data = {};
                     const { allDMS: allMessages, favWords } = await messages(files);
@@ -73,7 +72,11 @@ function Upload() {
                     data.firstStory = await firstStory(files);
                     setResult(data)
                 }
-                extract(files)
+                try {
+                    extract(files)
+                } catch (e) {
+                    return alert("Invalid package!")
+                }
             }
 
             startUpload();

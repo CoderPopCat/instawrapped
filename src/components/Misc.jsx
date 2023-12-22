@@ -9,7 +9,7 @@ function Misc({ result }) {
         <div className="flex flex-col lg:flex-row lg:justify-between gap-[1rem] lg:gap-[1.7rem] lg:mx-0">
             <div className="stats-box mt-8 lg:w-[33%] lg:mx-0 h-max lg:mt-4 px-4 py-2 bg-[#ffffff0d] animate__delay-1s rounded-lg relative group flex lg:justify-start justify-center">
                 <div className="stats-content m-3 lg:text-left text-center">
-                    <h2 className='break-words text-[1.43rem] cursor-pointer' onClick={() => blur('devices')}>
+                    <h2 className='break-words text-[1.33rem] cursor-pointer' onClick={() => blur('devices')}>
                         Connected Devices
                     </h2>
                     <div className="stats-subcontainer mt-3 devices">

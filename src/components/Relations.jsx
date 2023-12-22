@@ -29,7 +29,7 @@ function Relations({ result }) {
             </div>
             <div className="stats-box lg:w-[33%] lg:mx-0 h-max lg:mt-4 mt-2 px-4 py-2 bg-[#ffffff0d] animate__delay-1s rounded-lg relative group flex lg:justify-start justify-center">
                 <div className="stats-content m-3 lg:text-left text-center">
-                    <h2 className='w-max text-[1.475rem] cursor-pointer' onClick={() => blur('cfs')}>
+                    <h2 className='cfs-pain cursor-pointer' onClick={() => blur('cfs')}>
                         Close Friends
                     </h2>
                     <div className="stats-subcontainer mt-3 cfs">
