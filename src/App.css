@@ -3,31 +3,31 @@
   font-family: 'Inter';
   font-style: normal;
   font-weight: 400;
-  src: url('./assets/font/inter-v12-latin-regular.eot');
+  src: url('/assets/font/inter-v12-latin-regular.eot');
   /* IE9 Compat Modes */
   src: local(''),
-    url('./assets/font/inter-v12-latin-regular.eot?#iefix') format('embedded-opentype'),
+    url('/assets/font/inter-v12-latin-regular.eot?#iefix') format('embedded-opentype'),
     /* IE6-IE8 */
-    url('./assets/font/inter-v12-latin-regular.woff2') format('woff2'),
+    url('/assets/font/inter-v12-latin-regular.woff2') format('woff2'),
     /* Super Modern Browsers */
-    url('./assets/font/inter-v12-latin-regular.woff') format('woff'),
+    url('/assets/font/inter-v12-latin-regular.woff') format('woff'),
     /* Modern Browsers */
-    url('./assets/font/inter-v12-latin-regular.ttf') format('truetype'),
+    url('/assets/font/inter-v12-latin-regular.ttf') format('truetype'),
     /* Safari, Android, iOS */
-    url('./assets/font/inter-v12-latin-regular.svg#Inter') format('svg');
+    url('/assets/font/inter-v12-latin-regular.svg#Inter') format('svg');
   /* Legacy iOS */
 }
 
 @font-face {
   font-family: 'Monument';
-  src: url("./assets/font/MonumentExtended-Regular.woff2") format('woff2');
+  src: url("/assets/font/MonumentExtended-Regular.woff2") format('woff2');
   font-weight: 500;
   font-style: normal
 }
 
 @font-face {
   font-family: MatterTRIAL;
-  src: url(./assets/font/MatterTRIAL-Medium.woff) format('woff');
+  src: url(/assets/font/MatterTRIAL-Medium.woff) format('woff');
 }
 
 * {
@@ -36,7 +36,7 @@
 }
 
 body {
-  background-image: url(./assets/bg.png);
+  background-image: url(/assets/bg.png);
   background-size: cover;
   background-repeat: no-repeat;
   background-color: #121212;
