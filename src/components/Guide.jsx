@@ -10,7 +10,7 @@ function Guide() {
                     <div className="flex lg:flex-row flex-col-reverse justify-around">
                         <div className="laptop lg:w-[50%]">
                             <h2 className='text-[34px]'>Desktop</h2>
-                            <div className="tut-content mt-2 flex flex-col items-left gap-[1.7rem] mx-3 lg:mx-7">
+                            <div className="tut-content mt-2 flex flex-col items-left gap-[2.2rem] mx-3 lg:mx-7">
                                 <img src="/assets/img/desktop.png" alt="Desktop" className='rounded-lg invert' />
                                 <img src="/assets/img/continue.png" alt="Continue" className='rounded-lg' />
                                 <h3 className='line flex items-center text-left text-[27px]'>Click Continue</h3>
@@ -31,10 +31,9 @@ function Guide() {
                                 <h3 className='line flex items-center text-left text-[27px]'>Click</h3>
                                 <img src="/assets/img/download.jpg" alt="" className="rounded-lg" />
                                 <p className='line text-left text-[22px]'>Scroll Down And Click 'Download Your Information'</p>
-                                <img src="/assets/img/complete.png" alt="complete" className="rounded-lg" />
+                                <img src="/assets/img/phone-select.jpg" alt="complete" className="rounded-lg" />
                                 <p className='line text-left text-[22px]'>Complete Copy</p>
-                                <img src="/assets/img/options.png" alt="options" className="rounded-lg w-max" />
-                                <img src="/assets/img/format.png" alt="format" className='rounded-lg' />
+                                <img src="/assets/img/phone-json.jpg" alt="format" className='rounded-lg' />
                                 <p className='line text-left text-[22px]'>Select 'All Time' Date range & JSON format.</p>
                             </div>
                         </div>
