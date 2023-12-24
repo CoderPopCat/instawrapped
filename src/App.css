@@ -40,7 +40,6 @@ body {
   background-size: cover;
   background-repeat: no-repeat;
   background-color: #121212;
-  min-height: 100vh;
 }
 
 .function-description p {
@@ -54,6 +53,25 @@ h2 {
 
 .leaderboard-pain {
   flex-direction: row;
+}
+
+.loader {
+  width: 120px;
+  height: 20px;
+  transform: skewX(-45deg);
+  background: 
+    linear-gradient(#06f 0 0) left -30px top 0/30px 20px no-repeat 
+    #101113;
+  border: 1px solid #06f;
+  animation: l3 1s infinite linear;
+  display: block;
+  margin: auto;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+@keyframes l3 {
+  100% {background-position: right -30px top 0}
 }
 
 @media only screen and (max-width: 1250px) {
@@ -490,24 +508,6 @@ h6 {
   font-weight: 900 !important
 }
 
-.loader {
-  position: absolute;
-  background: #000;
-  height: 100%;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  z-index: 22
-}
-
-.loader img {
-  border-radius: 50%;
-  border: 6px solid #DE01D6;
-  width: 20%;
-  animation: pulsate 1s linear infinite
-}
 
 .wrapper {
   border: 1px solid transparent;
@@ -625,58 +625,4 @@ h6 {
   border-radius: 145px;
   text-align: left;
   width: max-content;
-}
-
-.loader {
-  position: relative;
-  width: 96px;
-  height: 96px;
-  transform: rotate(45deg);
-}
-
-.loader-square {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 28px;
-  height: 28px;
-  margin: 2px;
-  border-radius: 0px;
-  background: white;
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  animation: square-animation 10s ease-in-out infinite both;
-}
-
-.loader-square:nth-of-type(0) {
-  animation-delay: 0s;
-}
-
-.loader-square:nth-of-type(1) {
-  animation-delay: -1.4285714286s;
-}
-
-.loader-square:nth-of-type(2) {
-  animation-delay: -2.8571428571s;
-}
-
-.loader-square:nth-of-type(3) {
-  animation-delay: -4.2857142857s;
-}
-
-.loader-square:nth-of-type(4) {
-  animation-delay: -5.7142857143s;
-}
-
-.loader-square:nth-of-type(5) {
-  animation-delay: -7.1428571429s;
-}
-
-.loader-square:nth-of-type(6) {
-  animation-delay: -8.5714285714s;
-}
-
-.loader-square:nth-of-type(7) {
-  animation-delay: -10s;
 }

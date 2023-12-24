@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Unzip, AsyncUnzipInflate } from "fflate";
-import { getSaved, getComments, getStories, messages, getDMS, storiesPosted, following, followers, firstFollower, blocked, personalInfo, closeFriends, storiesLiked, likedPosts, likedComments, devices, firstStory } from '../functions';
+import { getSaved, getComments, messages, getDMS, storiesPosted, following, followers, firstFollower, blocked, personalInfo, closeFriends, storiesLiked, likedPosts, likedComments, devices, firstStory } from '../functions';
 import { Tooltip } from 'react-tooltip';
 import LoadingBar from 'react-top-loading-bar'
 import Leaderboard from './Leaderboard';
@@ -10,11 +10,13 @@ import Liked from './Liked';
 import Relations from './Relations';
 import Misc from './Misc';
 import downloadScreenshot from '../downloadScreenshot';
+import { useEffect } from 'react';
 
 function Upload() {
     const [result, setResult] = useState('');
     const [progress, setProgress] = useState(0);
     const [open, setOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
     const onUpload = (files) => {
         let uploaded = files[0]
         if (!uploaded) return alert('Please upload a file!');
@@ -28,6 +30,7 @@ function Upload() {
         if (uploaded.type === "application/zip" ||
             uploaded.type === "application/x-zip-compressed") {
             console.log('zip file acquired!');
+            setLoading(true);
             setProgress(progress + 20)
             async function startUpload() {
                 const reader = new Unzip();
@@ -47,6 +50,7 @@ function Upload() {
                     };
                 }
                 const filenames = files.map(f => f.name);
+                if (!filenames.includes('personal_information/')) return alert("Invalid Instagram Data Package!")
                 async function extract(files, options) {
                     const data = {};
                     const { allDMS: allMessages, favWords } = await messages(files);
@@ -62,7 +66,6 @@ function Upload() {
                     data.followers = await followers(files);
                     data.firstFollower = await firstFollower(files);
                     data.blocked = await blocked(files);
-                    data.personalInfo = await personalInfo(files);
                     data.favoriteWords = favWords;
                     data.closeFriends = await closeFriends(files);
                     data.storiesLiked = await storiesLiked(files);
@@ -70,18 +73,16 @@ function Upload() {
                     data.likedComments = await likedComments(files);
                     data.devices = await devices(files);
                     data.firstStory = await firstStory(files);
+                    data.personalInfo = await personalInfo(files);
                     setResult(data)
+                    setLoading(false);
                 }
-                try {
-                    extract(files)
-                } catch (e) {
-                    return alert("Invalid package!")
-                }
+                extract(files)
             }
 
             startUpload();
-            setProgress(100)
-            setOpen(false)
+            setProgress(100);
+            setOpen(false);
         } else {
             alert('wrong file type!')
         }
@@ -128,7 +129,10 @@ function Upload() {
                             </div>
                         </>
                     )}
-                    {!result && (<div className="flex justify-center items-center upload mt-[2vh]">
+                    {loading && (
+                        <div class="loader"></div>
+                    )}
+                    {!(!loading && result) && (<div className="upload-container flex justify-center items-center upload mt-[2vh]">
                         <div className="flex items-center justify-center w-[75%]">
                             <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-lg cursor-pointer hover:bg-[#0b0c0d] bg-transparent border-gray-600" style={{ backdropFilter: 'blur(25px)' }}>
                                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
