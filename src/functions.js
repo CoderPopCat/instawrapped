@@ -89,7 +89,7 @@ export const messages = async (files) => {
     const allDMS = [];
     for (const dm of dms) {
         const messages = await read(`${files.map(f => f.name).includes('your_activity_across_facebook/') ? 'your_instagram_activity/' : ''}messages/inbox/${dm}/message_1.json`, files);
-        for (let i = 2; i <= 4; i++) {
+        for (let i = 2; i <= 15; i++) {
             const extra = await read(`${files.map(f => f.name).includes('your_activity_across_facebook/') ? 'your_instagram_activity/' : ''}messages/inbox/${dm}/message_${i}.json`, files);
             if (extra) messages.messages.push(...extra.messages);
         }

@@ -28,7 +28,7 @@ function Upload() {
             }
         }
         if (uploaded.type === "application/zip" ||
-            uploaded.type === "application/x-zip-compressed") {
+        uploaded.type === "application/x-zip-compressed") {
             console.log('zip file acquired!');
             setLoading(true);
             setProgress(progress + 20)
@@ -39,57 +39,59 @@ function Upload() {
                 reader.onfile = f => files.push(f);
                 if (!uploaded.stream) return alert('This browser isn\'t supported, please try a different one!')
                 const fileReader = uploaded.stream().getReader();
-                while (true) {
-                    const { done, value } = await fileReader.read();
-                    if (done) {
-                        reader.push(new Uint8Array(0), true);
-                        break;
-                    }
-                    for (let i = 0; i < value.length; i += 65536) {
-                        reader.push(value.subarray(i, i + 65536));
-                    };
+            while (true) {
+                const { done, value } = await fileReader.read();
+                if (done) {
+                    reader.push(new Uint8Array(0), true);
+                    break;
                 }
-                const filenames = files.map(f => f.name);
-                if (!filenames.includes('personal_information/')) return alert("Invalid Instagram Data Package!")
-                async function extract(files, options) {
-                    const data = {};
-                    const { allDMS: allMessages, favWords } = await messages(files);
-                    const leaderboard = allMessages.filter(u => u.participants < 3).sort((a, b) => b.count - a.count).slice(0, 10);
-                    data.saved = await getSaved(files);
-                    data.totalComments = await getComments(files);
-                    data.totalDMS = getDMS(files).length;
-                    data.topDMS = leaderboard;
-                    data.messagesSent = allMessages.reduce((a, b) => a + b.myMessages, 0);
-                    data.messagesReceived = allMessages.reduce((a, b) => a + b.count, 0) - data.messagesSent;
-                    data.storiesPosted = await storiesPosted(files);
-                    data.following = await following(files);
-                    data.followers = await followers(files);
-                    data.firstFollower = await firstFollower(files);
-                    data.blocked = await blocked(files);
-                    data.favoriteWords = favWords;
-                    data.closeFriends = await closeFriends(files);
-                    data.storiesLiked = await storiesLiked(files);
-                    data.likedPosts = await likedPosts(files);
-                    data.likedComments = await likedComments(files);
-                    data.devices = await devices(files);
-                    data.firstStory = await firstStory(files);
-                    data.personalInfo = await personalInfo(files);
-                    setResult(data)
-                    setLoading(false);
-                }
-                extract(files)
+                for (let i = 0; i < value.length; i += 65536) {
+                    reader.push(value.subarray(i, i + 65536));
+                };
             }
-
-            startUpload();
-            setProgress(100);
-            setOpen(false);
-        } else {
-            alert('wrong file type!')
-        }
+            const filenames = files.map(f => f.name);
+            if (!filenames.includes('personal_information/')) return alert("Invalid Instagram Data Package!")
+            async function extract(files, options) {
+        const data = {};
+        const { allDMS: allMessages, favWords } = await messages(files);
+        const leaderboard = allMessages.filter(u => u.participants < 3).sort((a, b) => b.count - a.count).slice(0, 10);
+        data.saved = await getSaved(files);
+        data.totalComments = await getComments(files);
+        data.totalDMS = getDMS(files).length;
+        data.topDMS = leaderboard;
+        data.messagesSent = allMessages.reduce((a, b) => a + b.myMessages, 0);
+        data.messagesReceived = allMessages.reduce((a, b) => a + b.count, 0) - data.messagesSent;
+        data.storiesPosted = await storiesPosted(files);
+        data.following = await following(files);
+        data.followers = await followers(files);
+        data.firstFollower = await firstFollower(files);
+        data.blocked = await blocked(files);
+        data.favoriteWords = favWords;
+        data.closeFriends = await closeFriends(files);
+        data.storiesLiked = await storiesLiked(files);
+        data.likedPosts = await likedPosts(files);
+        data.likedComments = await likedComments(files);
+        data.devices = await devices(files);
+        data.firstStory = await firstStory(files);
+        data.personalInfo = await personalInfo(files);
+        const { topDMS, ...rest } = data;
+        window.downloadable = { ...rest, topDMS: topDMS.map(({ all, participants, ...others }) => others) };
+        setResult(data)
+        setLoading(false);
     }
-    const blur = (classname) => {
-        const el = document.querySelector(`.${classname}`);
-        el.style.filter.includes('blur') ? el.style.filter = 'unset' : el.style.filter = 'blur(6px)';
+    extract(files)
+}
+
+startUpload();
+setProgress(100);
+setOpen(false);
+} else {
+    alert('wrong file type!')
+}
+}
+const blur = (classname) => {
+    const el = document.querySelector(`.${classname}`);
+    el.style.filter.includes('blur') ? el.style.filter = 'unset' : el.style.filter = 'blur(6px)';
     }
     return (
         <>
@@ -225,7 +227,7 @@ function Upload() {
                                         <Tooltip id='download' />
                                         <a data-tooltip-id='donate' data-tooltip-content="Download this information as .json [DO NOT SHARE WITH PEOPLE YOU DON'T TRUST]" data-tooltip-float={false} data-tooltip-variant='dark' class="hero-button" type="button"
                                             href={`data:text/json;charset=utf-8,${encodeURIComponent(
-                                                JSON.stringify(result)
+                                                JSON.stringify(window.downloadable)
                                             )}`}
                                             download={`${result.personalInfo.username}.json`}
                                         >
