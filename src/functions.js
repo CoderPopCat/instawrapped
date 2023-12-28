@@ -159,7 +159,7 @@ export const firstFollower = async (files) => {
 
 export const blocked = async (files) => {
     const blocked = await read(`${files.map(f => f.name).includes('your_activity_across_facebook/') ? 'connections/' : ''}followers_and_following/blocked_accounts.json`, files);
-    return blocked.relationships_blocked_users.length;
+    return blocked ? blocked.relationships_blocked_users.length : 0;
 }
 
 export const closeFriends = async (files) => {
