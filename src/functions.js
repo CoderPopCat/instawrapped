@@ -164,7 +164,7 @@ export const blocked = async (files) => {
 
 export const closeFriends = async (files) => {
     const closeFriends = await read(`${files.map(f => f.name).includes('your_activity_across_facebook/') ? 'connections/' : ''}followers_and_following/close_friends.json`, files);
-    return closeFriends ? closeFriends.relationships_close_friends : 0;
+    return closeFriends ? closeFriends.relationships_close_friends.length : 0;
 }
 
 export const storiesLiked = async (files) => {
@@ -196,8 +196,8 @@ export const personalInfo = async (files) => {
     const personalInfo = await read(`${files.map(f => f.name).includes('your_activity_across_facebook/') ? 'personal_information/' : ''}personal_information/personal_information.json`, files);
     const data = {
         username: decodeURIComponent(escape(personalInfo.profile_user[0].string_map_data.Username.value)),
-        name: decodeURIComponent(escape(personalInfo.profile_user[0].string_map_data.Name.value)),
-        bio: decodeURIComponent(escape(personalInfo.profile_user[0].string_map_data.Bio.value)),
+        name: decodeURIComponent(escape(personalInfo.profile_user[0].string_map_data.Name ? personalInfo.profile_user[0].string_map_data.Name.value : "No Name")),
+        bio: decodeURIComponent(escape(personalInfo.profile_user[0].string_map_data.Bio ? personalInfo.profile_user[0].string_map_data.Bio.value : "No Bio")),
         lastPFPUpdate: personalInfo.profile_user[0].media_map_data["Profile Photo"].creation_timestamp,
     }
     return data;
