@@ -42,6 +42,10 @@ body {
   background-color: #121212;
 }
 
+svg {
+  display: inline !important;
+}
+
 .function-description p {
   color: #d8d8d8;
 }
