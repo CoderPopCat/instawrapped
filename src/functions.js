@@ -130,7 +130,7 @@ export const following = async (files) => {
 export const followers = async (files) => {
     if (files.map(f => f.name).includes('your_activity_across_facebook/')) {
         const followers = await read("connections/followers_and_following/followers_1.json", files);
-        const followerCount = followers.length;
+        let followerCount = followers.length;
         for (let i = 2; i <= 15; i++) {
             const extra = await read(`connections/followers_and_following/followers_${i}.json`, files);
             if (extra) followerCount += extra.length;
@@ -138,7 +138,7 @@ export const followers = async (files) => {
         return followerCount;
     } else {
         const followers = await read("followers_and_following/followers_1.json", files);
-        const followerCount = followers.length;
+        let followerCount = followers.length;
         for (let i = 2; i <= 15; i++) {
             const extra = await read(`followers_and_following/followers_${i}.json`, files);
             if (extra) followerCount += extra.length;
