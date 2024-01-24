@@ -1,4 +1,5 @@
-require('dotenv').config();
+import dotenv from 'dotenv'
+dotenv.config()
 import './App.css'
 import { useState } from 'react'
 import './navbar.css'
