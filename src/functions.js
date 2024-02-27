@@ -114,7 +114,7 @@ export const messages = async (files) => {
 
 export const storiesPosted = async (files) => {
     const stories = await read(`${files.map(f => f.name).includes('your_activity_across_facebook/') ? 'your_instagram_activity/' : ''}content/stories.json`, files);
-    return stories.ig_stories.length;
+    return stories ? stories.ig_stories.length : 0;
 }
 
 export const following = async (files) => {
