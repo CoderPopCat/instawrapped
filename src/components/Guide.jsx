@@ -15,9 +15,11 @@ function Guide() {
                                 <img src="/assets/img/continue.png" alt="Continue" className='rounded-lg' />
                                 <h3 className='line flex items-center text-left text-[27px]'>Click Continue</h3>
                                 <img src="/assets/img/request.png" alt="" className="rounded-lg" />
-                                <p className='line text-left text-[22px]'>Press 'Request A Download'</p>
+                                <p className='line text-left text-[22px]'>Press 'Download or Transfer Information'</p>
                                 <img src="/assets/img/complete.png" alt="complete" className="rounded-lg" />
-                                <p className='line text-left text-[22px]'>Complete Copy</p>
+                                <p className='line text-left text-[22px]'>All Available Information</p>
+                                <img src="/assets/img/todevice.png" alt="to device" className='rounded-lg' />
+                                <p className="line text-left text-[22px]">Download to Device</p>
                                 <img src="/assets/img/options.png" alt="options" className="rounded-lg w-[100%]" />
                                 <img src="/assets/img/format.png" alt="format" className='rounded-lg' />
                                 <p className='line text-left text-[22px]'>Select 'All Time' Date range & JSON format.</p>
@@ -31,8 +33,10 @@ function Guide() {
                                 <h3 className='line flex items-center text-left text-[27px]'>Click</h3>
                                 <img src="/assets/img/download.jpg" alt="" className="rounded-lg" />
                                 <p className='line text-left text-[22px]'>Scroll Down And Click 'Download Your Information'</p>
-                                <img src="/assets/img/phone-select.jpg" alt="complete" className="rounded-lg" />
-                                <p className='line text-left text-[22px]'>Complete Copy</p>
+                                <img src="/assets/img/transfer.jpg" alt="to device" className='rounded-lg' />
+                                <p className="line text-left text-[22px]">Download to Device</p>
+                                <img src="/assets/img/phone-select.png" alt="complete" className="rounded-lg" />
+                                <p className='line text-left text-[22px]'>All Available Information</p>
                                 <img src="/assets/img/phone-json.jpg" alt="format" className='rounded-lg' />
                                 <p className='line text-left text-[22px]'>Select 'All Time' Date range & JSON format.</p>
                             </div>
