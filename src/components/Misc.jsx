@@ -33,7 +33,7 @@ function Misc({ result }) {
                         First Story Date
                     </h2>
                     <div className="stats-subcontainer mt-3 firststory">
-                        <h3 className="text-2xl text-gray-300 font-thin">{new Date(result.firstStory*1000).toUTCString().split(" ").slice(0, 4).join(" ")}</h3>
+                        <h3 className="text-2xl text-gray-300 font-thin">{new Date(result.firstStory).toDateString()}</h3>
                     </div>
                 </div>
             </div>

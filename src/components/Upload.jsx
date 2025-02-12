@@ -50,11 +50,12 @@ function Upload() {
                     };
                 }
                 const filenames = files.map(f => f.name);
-                if (!filenames.includes('personal_information/')) return alert("Invalid Instagram Data Package!")
+                console.log(filenames);
+                if (!filenames.includes('personal_information/personal_information/')) return alert("Invalid Instagram Data Package!")
                 async function extract(files, options) {
                     const data = {};
                     const { allDMS: allMessages, favWords } = await messages(files);
-                    const leaderboard = allMessages.filter(u => u.participants < 3).sort((a, b) => b.count - a.count).slice(0, 10);
+                    const leaderboard = allMessages.filter(u => u.participants < 3).filter(user => !user.username.includes('Instagram')).sort((a, b) => b.count - a.count).slice(0, 10);
                     data.saved = await getSaved(files);
                     data.totalComments = await getComments(files);
                     data.totalDMS = getDMS(files).length;
