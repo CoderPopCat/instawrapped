@@ -34,7 +34,6 @@ export const getSaved = async (files) => {
 export const getComments = async (files) => {
     const postComments = await read(`${files.map(f => f.name).includes('your_activity_across_facebook/') ? 'your_instagram_activity/' : 'your_instagram_activity/'}comments/post_comments_1.json`, files);
     const reelComments = await read(`${files.map(f => f.name).includes('your_activity_across_facebook/') ? 'your_instagram_activity/' : 'your_instagram_activity/'}comments/reels_comments.json`, files);
-    console.log(`${files.map(f => f.name).includes('your_activity_across_facebook/') ? 'your_instagram_activity/' : 'your_instagram_activity/'}comments/post_comments_1.json`)
     return postComments.length + reelComments.comments_reels_comments.length;
 }
 
@@ -46,13 +45,43 @@ export const getDMS = (files) => {
     // } else {
     dms = (files.filter((file) => file.name.startsWith(`your_instagram_activity/messages/inbox/`) && file.name.endsWith(".json")).map(f => f.name));
     unique = [...new Set(dms.map((dm) => dm.split("/")[3]))];
-    console.log(unique, dms);
     return unique;
 }
 
 
 function findMostRepeatedWord(words) {
-    const ignoreWordsLength4Or5 = ['sent', 'from', 'attachment', 'the', 'and', 'that', 'with', 'this', 'have', 'your', 'from', 'will', 'been', 'they', 'were', 'which', 'would', 'about'];
+    const ignoreWordsLength4Or5 = [
+        // Articles and basic pronouns
+        'the', 'a', 'an', 'this', 'that', 'these', 'those', 'i', 'you', 'he', 'she', 'it', 'we', 'they',
+        'me', 'him', 'her', 'us', 'them', 'my', 'your', 'his', 'its', 'our', 'their',
+        
+        // Prepositions
+        'in', 'on', 'at', 'to', 'for', 'with', 'by', 'from', 'up', 'down', 'over', 'under',
+        
+        // Conjunctions
+        'and', 'or', 'but', 'nor', 'so', 'yet',
+        
+        // Common verbs
+        'is', 'are', 'was', 'were', 'be', 'been', 'being',
+        'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'can', 'could',
+        'shall', 'should', 'may', 'might', 'must',
+        
+        // Common adverbs
+        'very', 'really', 'just', 'now', 'then', 'there', 'here', 'only', 'also',
+        'too', 'about', 'most', 'more', 'some', 'such',
+        
+        // Social media common words
+        'like', 'lol', 'omg', 'tf', 'fr', 'u', 'ur', 'r', 'dm', 'rn', 'idk', 'nvm',
+        'lmao', 'tbh', 'imo', 'fyi', 'btw', 'aka', 'msg', 'thx',
+        
+        // Common time-related words
+        'time', 'day', 'today', 'tomorrow', 'yesterday', 'now', 'later', 'soon',
+        
+        // Common Instagram-specific words
+        'post', 'posted', 'posting', 'story', 'stories', 'feed', 'dm', 'message',
+        'sent', 'received', 'liked', 'commented', 'shared', 'following', 'followers',
+        'instagram', 'insta', 'gram', 'ig', 'photo', 'video', 'reel', 'reacted'
+    ];
 
     function isEnglishWord(word) {
         return /^[a-zA-Z]+$/.test(word);
@@ -64,10 +93,19 @@ function findMostRepeatedWord(words) {
     }
 
     const wordFrequencyMap = new Map();
-
+    function isValidWord(word) {
+        // Must be only letters, at least 3 characters long
+        return /^[a-zA-Z]{3,}$/.test(word) && 
+               // Not in stop words
+               !ignoreWordsLength4Or5.includes(word.toLowerCase()) &&
+               // Not just repeating letters (like 'haha', 'hahaha')
+               !/^(.)\1+$/.test(word) &&
+               // Not common repetitive patterns
+               !/^(ha|he|ah|eh|oh|hi|lol|wow|ok|kay|hm|what)+$/i.test(word);
+    }
     words.forEach((word) => {
         const lowercaseWord = word.toLowerCase();
-        if (!shouldIgnore(lowercaseWord) && isEnglishWord(lowercaseWord)) {
+        if (!shouldIgnore(lowercaseWord) && isEnglishWord(lowercaseWord) && isValidWord(lowercaseWord)) {
             const count = wordFrequencyMap.get(lowercaseWord) || 0;
             wordFrequencyMap.set(lowercaseWord, count + 1);
         }
@@ -79,7 +117,9 @@ function findMostRepeatedWord(words) {
     const top10Words = wordFrequencyArray.slice(0, 10);
     const top10WordsOnly = top10Words.map((pair) => ({ word: pair[0], count: pair[1] }));
 
-    return top10WordsOnly;
+    // give all words, not only 10 with their count
+    return wordFrequencyArray.map(pair => ({ word: pair[0], count: pair[1] }));
+
 }
 
 export const messages = async (files) => {
@@ -98,7 +138,7 @@ export const messages = async (files) => {
     const allWords = [];
     for (const conv of allDMS) {
         for (const message of conv.all) {
-            if (message.content) {
+            if (message.content && message.sender_name !== conv.name) {
                 const words = message.content.split(" ");
                 for (const word of words) {
                     allWords.push(word);
@@ -106,12 +146,13 @@ export const messages = async (files) => {
             }
         }
     }
-    const words = allWords.filter((word) => word.length > 3);
-    return { allDMS, favWords: findMostRepeatedWord(words) };
+    console.log(findMostRepeatedWord(allWords.filter(word => word.length > 3)));
+    const words = allWords.filter((word) => word.length > 4);
+    return { allDMS, favWords: findMostRepeatedWord(words).slice(0, 15) };
 }
 
 export const storiesPosted = async (files) => {
-    const stories = await read(`${files.map(f => f.name).includes('your_activity_across_facebook/') ? 'your_instagram_activity/' : 'your_instagram_activity/'}content/stories.json`, files);
+    const stories = await read(`${files.map(f => f.name).includes('your_activity_across_facebook/') ? 'your_instagram_activity/' : 'your_instagram_activity/'}media/stories.json`, files);
     return stories ? stories.ig_stories.length : 0;
 }
 
@@ -156,7 +197,7 @@ export const firstFollower = async (files) => {
 }
 
 export const blocked = async (files) => {
-    const blocked = await read(`${files.map(f => f.name).includes('your_activity_across_facebook/') ? 'connections/' : 'connections/'}followers_and_following/blocked_accounts.json`, files);
+    const blocked = await read(`${files.map(f => f.name).includes('your_activity_across_facebook/') ? 'connections/' : 'connections/'}followers_and_following/blocked_profiles.json`, files);
     return blocked ? blocked.relationships_blocked_users.length : 0;
 }
 
@@ -166,7 +207,7 @@ export const closeFriends = async (files) => {
 }
 
 export const storiesLiked = async (files) => {
-    const storiesLiked = await read(`${files.map(f => f.name).includes('your_activity_across_facebook/') ? 'your_instagram_activity/' : 'your_instagram_activity/'}story_sticker_interactions/story_likes.json`, files);
+    const storiesLiked = await read(`${files.map(f => f.name).includes('your_activity_across_facebook/') ? 'your_instagram_activity/' : 'your_instagram_activity/'}story_interactions/story_likes.json`, files);
     return storiesLiked.story_activities_story_likes.length;
 }
 

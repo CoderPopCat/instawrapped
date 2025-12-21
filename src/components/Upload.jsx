@@ -10,7 +10,6 @@ import Liked from './Liked';
 import Relations from './Relations';
 import Misc from './Misc';
 import downloadScreenshot from '../downloadScreenshot';
-import { useEffect } from 'react';
 
 function Upload() {
     const [result, setResult] = useState('');
@@ -50,8 +49,7 @@ function Upload() {
                     };
                 }
                 const filenames = files.map(f => f.name);
-                console.log(filenames);
-                if (!filenames.includes('personal_information/personal_information/')) return alert("Invalid Instagram Data Package!")
+                if (!filenames.includes('personal_information/personal_information/personal_information.json')) return alert("Invalid Instagram Data Package!")
                 async function extract(files, options) {
                     const data = {};
                     const { allDMS: allMessages, favWords } = await messages(files);
@@ -178,7 +176,7 @@ function Upload() {
                                             {result.favoriteWords.map((word, i) => {
                                                 return (
                                                     <>
-                                                        <Tooltip id={`word-count-${i}`} />
+                                                        <Tooltip key={i+1} id={`word-count-${i}`} />
                                                         <span key={i} data-tooltip-id={`word-count-${i}`} data-tooltip-content={`Used ${word.count.toLocaleString()} Times!`} data-tooltip-float={false} data-tooltip-variant='dark' className="inline-block px-9 py-3 mb-2 mr-2 text-md font-semibold cursor-pointer text-gray-300 backdrop-blur-xl bg-[#ffffff0d] rounded-lg">{word.word}</span>
                                                     </>
                                                 )
