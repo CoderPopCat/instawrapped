@@ -8,6 +8,7 @@ import Posted from './Posted';
 import Liked from './Liked';
 import Relations from './Relations';
 import Misc from './Misc';
+import ActivityStats from './ActivityStats';
 import downloadScreenshot from '../downloadScreenshot';
 
 function Demo() {
@@ -87,7 +88,11 @@ function Demo() {
         "likedPosts": 23071,
         "likedComments": 15100,
         "devices": 5,
-        "firstStory": 1606752109
+        "firstStory": 1606752109,
+        "accountAge": 1234,
+        "avgMessagesPerDay": 82.5,
+        "mostActiveDay": "Friday",
+        "mostActiveMonth": "March"
     };
     const generate = () => {
         setResult(data);
@@ -186,6 +191,11 @@ function Demo() {
                                     <Posted result={result} />
                                     <FollowInfo result={result} />
                                     <Misc result={result} />
+                                    <ActivityStats 
+                                        result={result} 
+                                        availableYears={[2024, 2023, 2022]}
+                                        onYearChange={() => {}}
+                                    />
                                     <div className="buttons flex flex-col items-center justify-center lg:justify-normal lg:items-start lg:flex-row flex-wrap gap-5 mt-7 pt-4 border-t-[2px] border-gray-500 border-dashed">
                                         <Tooltip id='download' />
                                         <a data-tooltip-id='donate' data-tooltip-content="Download this information as .json [DO NOT SHARE WITH PEOPLE YOU DON'T TRUST]" data-tooltip-float={false} data-tooltip-variant='dark' class="hero-button" type="button"

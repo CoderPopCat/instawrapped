@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Unzip, AsyncUnzipInflate } from "fflate";
-import { getSaved, getComments, messages, getDMS, storiesPosted, following, followers, firstFollower, blocked, personalInfo, closeFriends, storiesLiked, likedPosts, likedComments, devices, firstStory } from '../functions';
+import { getSaved, getComments, messages, getDMS, storiesPosted, following, followers, firstFollower, blocked, personalInfo, closeFriends, storiesLiked, likedPosts, likedComments, devices, firstStory, accountAge, avgMessagesPerDay, mostActiveDay, mostActiveMonth, getAvailableYears, filterMessagesByYear, clearMessageCache, filterStoriesPostedByYear, filterCommentsByYear, filterLikedPostsByYear, filterLikedCommentsByYear, filterLikedStoriesByYear } from '../functions';
 import { Tooltip } from 'react-tooltip';
 import LoadingBar from 'react-top-loading-bar'
 import Leaderboard from './Leaderboard';
@@ -9,6 +9,8 @@ import Posted from './Posted';
 import Liked from './Liked';
 import Relations from './Relations';
 import Misc from './Misc';
+import ActivityStats from './ActivityStats';
+import YearFilter from './YearFilter';
 import downloadScreenshot from '../downloadScreenshot';
 
 function Upload() {
@@ -16,6 +18,8 @@ function Upload() {
     const [progress, setProgress] = useState(0);
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [selectedYear, setSelectedYear] = useState(null);
+    const [availableYears, setAvailableYears] = useState([]);
     const onUpload = (files) => {
         let uploaded = files[0]
         if (!uploaded) return alert('Please upload a file!');
@@ -55,25 +59,46 @@ function Upload() {
                     const { allDMS: allMessages, favWords } = await messages(files);
                     const leaderboard = allMessages.filter(u => u.participants < 3).filter(user => !user.username.includes('Instagram')).sort((a, b) => b.count - a.count).slice(0, 10);
                     data.saved = await getSaved(files);
-                    data.totalComments = await getComments(files);
+                    const commentsData = await getComments(files);
+                    data.totalComments = commentsData.count;
+                    data.commentsData = commentsData;
                     data.totalDMS = getDMS(files).length;
                     data.topDMS = leaderboard;
                     data.messagesSent = allMessages.reduce((a, b) => a + b.myMessages, 0);
                     data.messagesReceived = allMessages.reduce((a, b) => a + b.count, 0) - data.messagesSent;
-                    data.storiesPosted = await storiesPosted(files);
+                    const storiesPostedData = await storiesPosted(files);
+                    data.storiesPosted = storiesPostedData.count;
+                    data.storiesPostedData = storiesPostedData;
                     data.following = await following(files);
                     data.followers = await followers(files);
                     data.firstFollower = await firstFollower(files);
                     data.blocked = await blocked(files);
                     data.favoriteWords = favWords;
                     data.closeFriends = await closeFriends(files);
-                    data.storiesLiked = await storiesLiked(files);
-                    data.likedPosts = await likedPosts(files);
-                    data.likedComments = await likedComments(files);
+                    const storiesLikedData = await storiesLiked(files);
+                    data.storiesLiked = storiesLikedData.count;
+                    data.storiesLikedData = storiesLikedData;
+                    const likedPostsData = await likedPosts(files);
+                    data.likedPosts = likedPostsData.count;
+                    data.likedPostsData = likedPostsData;
+                    const likedCommentsData = await likedComments(files);
+                    data.likedComments = likedCommentsData.count;
+                    data.likedCommentsData = likedCommentsData;
                     data.devices = await devices(files);
                     data.firstStory = await firstStory(files);
                     data.personalInfo = await personalInfo(files);
-                    const { topDMS, ...rest } = data;
+                    data.allMessages = allMessages;
+                    
+                    const years = getAvailableYears(allMessages);
+                    setAvailableYears(years);
+                    
+                    const allTimeFiltered = filterMessagesByYear(allMessages, null);
+                    data.accountAge = await accountAge(files);
+                    data.avgMessagesPerDay = avgMessagesPerDay(allTimeFiltered, null, data.firstStory);
+                    data.mostActiveDay = mostActiveDay(allTimeFiltered);
+                    data.mostActiveMonth = mostActiveMonth(allTimeFiltered);
+                    
+                    const { topDMS, allMessages: ______, commentsData: _______, storiesPostedData: _____, storiesLikedData: ____, likedPostsData: ___, likedCommentsData: _________, ...rest } = data;
                     window.downloadable = { ...rest, topDMS: topDMS.map(({ all, participants, ...others }) => others) };
                     setResult(data)
                     setLoading(false);
@@ -150,8 +175,52 @@ function Upload() {
                             </label>
                         </div>
                     </div>)}
-                    {result && (
+                    {result && (() => {
+                        const filteredMessages = filterMessagesByYear(result.allMessages || [], selectedYear);
+                        
+                        const filteredStats = !selectedYear ? result : (() => {
+                            const validDMs = [];
+                            let messagesSent = 0;
+                            let messagesReceived = 0;
+                            
+                            for (let i = 0; i < filteredMessages.length; i++) {
+                                const conv = filteredMessages[i];
+                                if (conv.participants < 3 && !conv.username.includes('Instagram')) {
+                                    validDMs.push(conv);
+                                }
+                                messagesSent += conv.myMessages;
+                                messagesReceived += (conv.count - conv.myMessages);
+                            }
+                            
+                            const filteredTopDMS = validDMs.sort((a, b) => b.count - a.count).slice(0, 10);
+                            
+                            return {
+                                ...result,
+                                topDMS: filteredTopDMS,
+                                messagesSent,
+                                messagesReceived,
+                                totalDMS: filteredMessages.length,
+                                avgMessagesPerDay: avgMessagesPerDay(filteredMessages, selectedYear, result.firstStory),
+                                mostActiveDay: mostActiveDay(filteredMessages),
+                                mostActiveMonth: mostActiveMonth(filteredMessages),
+                                storiesPosted: filterStoriesPostedByYear(result.storiesPostedData, selectedYear),
+                                totalComments: filterCommentsByYear(result.commentsData, selectedYear),
+                                likedPosts: filterLikedPostsByYear(result.likedPostsData, selectedYear),
+                                likedComments: filterLikedCommentsByYear(result.likedCommentsData, selectedYear),
+                                storiesLiked: filterLikedStoriesByYear(result.storiesLikedData, selectedYear)
+                            };
+                        })();
+                        
+                        return (
                         <div className="stats mt-3">
+                            <YearFilter 
+                                availableYears={availableYears}
+                                selectedYear={selectedYear}
+                                onYearChange={(year) => {
+                                    clearMessageCache();
+                                    setSelectedYear(year);
+                                }}
+                            />
                             <div className="flex flex-col lg:flex-row lg:justify-between gap-[1rem] lg:gap-[1.7rem] lg:mx-0">
                                 <div className="stats-box lg:w-[33%] lg:mt-4 mt-2 px-4 py-2 bg-[#ffffff0d] animate__delay-1s rounded-lg relative group flex justify-start">
                                     <div className="names m-3 text-left">
@@ -192,7 +261,7 @@ function Upload() {
                                             Total Conversations
                                         </h2>
                                         <div className="stats-subcontainer mt-3 conv">
-                                            <h3 className="text-2xl text-gray-300 font-thin">{result.totalDMS.toLocaleString()}</h3>
+                                            <h3 className="text-2xl text-gray-300 font-thin">{filteredStats.totalDMS.toLocaleString()}</h3>
                                         </div>
                                     </div>
                                 </div>
@@ -202,7 +271,7 @@ function Upload() {
                                             Messages Sent
                                         </h2>
                                         <div className="stats-subcontainer mt-3 messagesSent">
-                                            <h3 className="text-2xl text-gray-300 font-thin">{result.messagesSent.toLocaleString()}</h3>
+                                            <h3 className="text-2xl text-gray-300 font-thin">{filteredStats.messagesSent.toLocaleString()}</h3>
                                         </div>
                                     </div>
                                 </div>
@@ -212,19 +281,20 @@ function Upload() {
                                             Messages Received
                                         </h2>
                                         <div className="stats-subcontainer mt-3 received">
-                                            <h3 className="text-2xl text-gray-300 font-thin">{result.messagesReceived.toLocaleString()}</h3>
+                                            <h3 className="text-2xl text-gray-300 font-thin">{filteredStats.messagesReceived.toLocaleString()}</h3>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div className="flex flex-col lg:flex-row lg:justify-between gap-[1rem] mt-[0.75rem] lg:gap-[1.7rem] lg:mx-0">
-                                <Leaderboard result={result} />
+                                <Leaderboard result={filteredStats} />
                                 <div className="flex flex-col gap-[0.3rem] mb-10 w-[100%] lg:w-[66%]">
-                                    <Liked result={result} />
-                                    <Relations result={result} />
-                                    <Posted result={result} />
-                                    <FollowInfo result={result} />
-                                    <Misc result={result} />
+                                    <Liked result={filteredStats} />
+                                    <Relations result={filteredStats} />
+                                    <Posted result={filteredStats} />
+                                    <FollowInfo result={filteredStats} />
+                                    <Misc result={filteredStats} />
+                                    <ActivityStats result={filteredStats} />
                                     <div className="buttons flex flex-col items-center justify-center lg:justify-normal lg:items-start lg:flex-row flex-wrap gap-5 mt-7 pt-4 border-t-[2px] border-gray-500 border-dashed">
                                         <Tooltip id='download' />
                                         <a data-tooltip-id='donate' data-tooltip-content="Download this information as .json [DO NOT SHARE WITH PEOPLE YOU DON'T TRUST]" data-tooltip-float={false} data-tooltip-variant='dark' class="hero-button" type="button"
@@ -246,7 +316,8 @@ function Upload() {
                                 </div>
                             </div>
                         </div>
-                    )}
+                        );
+                    })()}
                 </div>
             </div>
         </>
