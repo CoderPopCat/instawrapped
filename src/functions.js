@@ -364,34 +364,69 @@ export const avgMessagesPerDay = (filteredMessages, year = null, firstStoryTimes
     }
 }
 
-const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
-export const mostActiveDay = (filteredMessages) => {
+export const mostActiveDateWithCount = (filteredMessages) => {
     try {
-        const dayCounts = new Array(7).fill(0);
+        const dateCounts = {};
+        const dateConvCounts = {};
 
         for (const conv of filteredMessages) {
-            for (const message of conv.all) {
+            const messages = conv.filteredMessages || conv.all || [];
+            for (const message of messages) {
                 if (message.timestamp_ms) {
-                    const day = new Date(message.timestamp_ms).getDay();
-                    dayCounts[day]++;
+                    const date = new Date(message.timestamp_ms);
+                    const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                    
+                    dateCounts[dateKey] = (dateCounts[dateKey] || 0) + 1;
+                    
+                    if (conv.participants < 3 && !conv.username?.includes('Instagram')) {
+                        if (!dateConvCounts[dateKey]) {
+                            dateConvCounts[dateKey] = {};
+                        }
+                        const convKey = conv.username || conv.title || 'Unknown';
+                        if (!dateConvCounts[dateKey][convKey]) {
+                            dateConvCounts[dateKey][convKey] = {
+                                username: convKey,
+                                count: 0
+                            };
+                        }
+                        dateConvCounts[dateKey][convKey].count++;
+                    }
                 }
             }
         }
 
-        let maxDay = 0;
+        let maxDate = null;
         let maxCount = 0;
-        for (let i = 0; i < 7; i++) {
-            if (dayCounts[i] > maxCount) {
-                maxCount = dayCounts[i];
-                maxDay = i;
+        for (const [date, count] of Object.entries(dateCounts)) {
+            if (count > maxCount) {
+                maxCount = count;
+                maxDate = date;
             }
         }
-        return DAY_NAMES[maxDay];
+
+        if (!maxDate) return { date: 'N/A', count: 0, topDMs: [] };
+
+        const [year, month, day] = maxDate.split('-');
+        const dateObj = new Date(year, month - 1, day);
+        const formattedDate = dateObj.toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
+
+        const topDMs = Object.values(dateConvCounts[maxDate] || {})
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 10);
+        return {
+            date: formattedDate,
+            count: maxCount,
+            formatted: `${formattedDate} (${maxCount.toLocaleString()} messages)`,
+            topDMs: topDMs
+        };
     } catch (error) {
-        return 'N/A';
+        return { date: 'N/A', count: 0, topDMs: [] };
     }
-}
+};
 
 const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 

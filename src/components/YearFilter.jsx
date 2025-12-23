@@ -4,10 +4,10 @@ function YearFilter({ availableYears, selectedYear, onYearChange }) {
     if (!availableYears || availableYears.length === 0) return null;
 
     return (
-        <div className="flex flex-wrap justify-center items-center gap-3 mb-6 mt-4">
+        <div className="flex flex-wrap justify-center items-center gap-2 lg:gap-3 mb-6 mt-4 px-2">
             <button
                 onClick={() => onYearChange(null)}
-                className={`pill-button px-4 py-2 rounded-lg border-2 transition-all ${
+                className={`pill-button px-3 py-2 text-sm lg:text-base lg:px-4 lg:py-2 rounded-lg border-2 transition-all ${
                     selectedYear === null
                         ? 'bg-[#06f] border-[#06f] text-white'
                         : 'bg-[#ffffff0d] border-[#1b1f23] text-gray-300 hover:bg-[#1b1f23]'
@@ -19,7 +19,7 @@ function YearFilter({ availableYears, selectedYear, onYearChange }) {
                 <button
                     key={year}
                     onClick={() => onYearChange(year)}
-                    className={`pill-button px-4 py-2 rounded-lg border-2 transition-all ${
+                    className={`pill-button px-3 py-2 text-sm lg:text-base lg:px-4 lg:py-2 rounded-lg border-2 transition-all ${
                         selectedYear === year
                             ? 'bg-[#06f] border-[#06f] text-white'
                             : 'bg-[#ffffff0d] border-[#1b1f23] text-gray-300 hover:bg-[#1b1f23]'
@@ -33,4 +33,3 @@ function YearFilter({ availableYears, selectedYear, onYearChange }) {
 }
 
 export default YearFilter;
-

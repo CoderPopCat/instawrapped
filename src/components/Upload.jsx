@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Unzip, AsyncUnzipInflate } from "fflate";
-import { getSaved, getComments, messages, getDMS, storiesPosted, following, followers, firstFollower, blocked, personalInfo, closeFriends, storiesLiked, likedPosts, likedComments, devices, firstStory, accountAge, avgMessagesPerDay, mostActiveDay, mostActiveMonth, getAvailableYears, filterMessagesByYear, clearMessageCache, filterStoriesPostedByYear, filterCommentsByYear, filterLikedPostsByYear, filterLikedCommentsByYear, filterLikedStoriesByYear } from '../functions';
+import { getSaved, getComments, messages, getDMS, storiesPosted, following, followers, firstFollower, blocked, personalInfo, closeFriends, storiesLiked, likedPosts, likedComments, devices, firstStory, accountAge, avgMessagesPerDay, mostActiveDateWithCount, mostActiveMonth, getAvailableYears, filterMessagesByYear, clearMessageCache, filterStoriesPostedByYear, filterCommentsByYear, filterLikedPostsByYear, filterLikedCommentsByYear, filterLikedStoriesByYear } from '../functions';
 import { Tooltip } from 'react-tooltip';
 import LoadingBar from 'react-top-loading-bar'
 import Leaderboard from './Leaderboard';
@@ -53,6 +53,7 @@ function Upload() {
                     };
                 }
                 const filenames = files.map(f => f.name);
+                // console.log(filenames);
                 if (!filenames.includes('personal_information/personal_information/personal_information.json')) return alert("Invalid Instagram Data Package!")
                 async function extract(files, options) {
                     const data = {};
@@ -95,7 +96,8 @@ function Upload() {
                     const allTimeFiltered = filterMessagesByYear(allMessages, null);
                     data.accountAge = await accountAge(files);
                     data.avgMessagesPerDay = avgMessagesPerDay(allTimeFiltered, null, data.firstStory);
-                    data.mostActiveDay = mostActiveDay(allTimeFiltered);
+                    // data.mostActiveDay = mostActiveDay(allTimeFiltered);
+                    data.mostActiveDate = mostActiveDateWithCount(allTimeFiltered);
                     data.mostActiveMonth = mostActiveMonth(allTimeFiltered);
                     
                     const { topDMS, allMessages: ______, commentsData: _______, storiesPostedData: _____, storiesLikedData: ____, likedPostsData: ___, likedCommentsData: _________, ...rest } = data;
@@ -201,7 +203,7 @@ function Upload() {
                                 messagesReceived,
                                 totalDMS: filteredMessages.length,
                                 avgMessagesPerDay: avgMessagesPerDay(filteredMessages, selectedYear, result.firstStory),
-                                mostActiveDay: mostActiveDay(filteredMessages),
+                                mostActiveDate: mostActiveDateWithCount(filteredMessages),
                                 mostActiveMonth: mostActiveMonth(filteredMessages),
                                 storiesPosted: filterStoriesPostedByYear(result.storiesPostedData, selectedYear),
                                 totalComments: filterCommentsByYear(result.commentsData, selectedYear),
@@ -236,17 +238,17 @@ function Upload() {
                                         })}</div>
                                     </div>
                                 </div>
-                                <div className="stats-box lg:w-[66%] lg:mx-0 lg:mt-4 mt-2 px-4 py-2 bg-[#ffffff0d] animate__delay-1s rounded-lg relative group flex justify-start">
+                                <div className="stats-box lg:w-[67%] lg:mx-0 lg:mt-4 mt-2 px-4 py-2 bg-[#ffffff0d] animate__delay-1s rounded-lg relative group flex justify-start">
                                     <div className="stats-content m-3 text-left">
                                         <h2 className='text-[1.65rem] cursor-pointer' onClick={() => blur('favwords')}>
                                             Favorite Words
                                         </h2>
-                                        <div className="stats-subcontainer mt-3 favwords">
+                                        <div className="flex justify-start items-center flex-wrap mt-3 favwords">
                                             {result.favoriteWords.map((word, i) => {
                                                 return (
                                                     <>
                                                         <Tooltip key={i+1} id={`word-count-${i}`} />
-                                                        <span key={i} data-tooltip-id={`word-count-${i}`} data-tooltip-content={`Used ${word.count.toLocaleString()} Times!`} data-tooltip-float={false} data-tooltip-variant='dark' className="inline-block px-9 py-3 mb-2 mr-2 text-md font-semibold cursor-pointer text-gray-300 backdrop-blur-xl bg-[#ffffff0d] rounded-lg">{word.word}</span>
+                                                        <span key={i} data-tooltip-id={`word-count-${i}`} data-tooltip-content={`Used ${word.count.toLocaleString()} Times!`} data-tooltip-float={false} data-tooltip-variant='dark' className="inline-block px-4 py-2 lg:px-9 lg:py-3 mb-2 mr-2 lg:text-md font-semibold cursor-pointer text-gray-300 backdrop-blur-xl bg-[#ffffff0d] rounded-lg">{word.word}</span>
                                                     </>
                                                 )
                                             })}
