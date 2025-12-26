@@ -27,7 +27,7 @@ function ActivityStats({ result }) {
                         </h2>
                         <div className="stats-subcontainer mt-3 mostactiveday">
                             <Tooltip key='mad' id={`active-date`} />
-                            <h3 data-tooltip-id={`active-date`} data-tooltip-content={`${result?.mostActiveDate.count.toLocaleString()} Messages!`} data-tooltip-float={false} data-tooltip-variant='dark' className="text-2xl text-gray-300 font-thin">{result?.mostActiveDate.date || 'N/A'}</h3>
+                            <h3 data-tooltip-id={`active-date`} data-tooltip-content={`${result?.mostActiveDate?.count.toLocaleString()} Messages!`} data-tooltip-float={false} data-tooltip-variant='dark' className="text-2xl text-gray-300 font-thin">{result?.mostActiveDate?.date || 'N/A'}</h3>
                         </div>
                     </div>
                 </div>
