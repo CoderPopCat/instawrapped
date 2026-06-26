@@ -63,8 +63,6 @@ InstaWrapped is fully open source under the MIT license. Every line of code that
 
 The page uses a small number of open-source JavaScript libraries (React, Next.js, fflate, shadcn/ui, Recharts). None of them are configured to phone home or collect user data.
 
-The page is hosted on [Vercel](https://vercel.com). Vercel may log standard web-server access logs (IP address, request path, timestamp) as part of serving the HTML/JS assets, consistent with their [privacy policy](https://vercel.com/legal/privacy-policy). This is indistinguishable from any other website you visit and contains no Instagram data.
-
 ---
 
 ## Changes to this policy
